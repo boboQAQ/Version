@@ -1,0 +1,53 @@
+<html>
+
+    <head>
+        <script type="text/javascript" src="/static/js/jquery-2.0.0.min.js"></script>
+        <script type="text/javascript" src="/static/js/jquery-ui"></script>
+        <link href="/static/css/bootstrap-select.min.css" rel="stylesheet" media="screen">
+        <link href="/static/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+        <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
+        <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/static/js/create.js"></script>
+    </head>
+    
+    <body>
+        <div class="container-fluid" id="LG">
+            <div class="row-fluid">
+                <div class="span12">
+                    <form class="form-search" id="form1">
+                        <div>&nbsp</div>
+                        <div class="input-group">
+                            <span>版本号：</span>&nbsp&nbsp&nbsp
+                            <input name="versionnumber" type="text" id="inputMessage1" class="form-control" placeholder="版本号" aria-describedby="basic-addon1">
+                        </div>
+                        <div>&nbsp</div>
+                        <div>
+                            服务列表：
+                            <select name="servicelist" id="slpk" class="selectpicker" multiple  data-live-search="true" data-size="3" multiple data-actions-box="true">
+                                  
+                            </select>
+                        </div>
+    
+                        <div>&nbsp</div>
+                        <div class="input-group">
+                            <span>备注：</span>
+                            &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                            <input name="comment" type="text" id="inputMessage2" class="form-control" placeholder="备注" aria-describedby="basic-addon1">
+                            <input class="btn btn-default" id="send1" type="button" value="创建版本" >
+                        </div>
+                    </form>
+                </div>
+    
+            </div>
+        </div>
+   
+    </body>
+    <!-- <script>
+        function sendcreate() {
+        var inputMessage1 = document.getElementById("inputMessage1").value; // 获取输入框的值
+        var inputMessage2 = document.getElementById("inputMessage2").value;
+        console.log(inputMessage1);
+        console.log(inputMessage2);
+    }
+    </!--> 
+    </html>

@@ -1,0 +1,68 @@
+<html>
+
+<head>
+    <script type="text/javascript" src="/static/js/jquery-2.0.0.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-ui"></script>
+    <link href="/static/css/bootstrap-select.min.css" rel="stylesheet" media="screen">
+    <link href="/static/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+    <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/modify.js"></script>
+</head>
+
+<body>
+    <div class="container-fluid" id="LG">
+        <div class="row-fluid">
+            <div class="span12">
+                <form id="form1" class="form-search">
+                    <div>&nbsp</div>
+                    <div>
+                        版本号：&nbsp&nbsp&nbsp&nbsp
+                        <select name="versionnumber" id="slpk1" class="selectpicker"  data-size="3" data-live-search="true">
+                        </select>
+                    </div>
+                    <!-- <div class="dropdown">
+                        版本号:&nbsp&nbsp&nbsp&nbsp
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                          请选择
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="#">版本1</a></li>
+                            <li><a href="#">版本2</a></li>
+                            <li><a href="#">版本3</a></li>
+                        </ul>
+                    </div> -->
+                    <div>&nbsp</div>
+                    <div>
+                        服务列表：
+                        <select id="slpk2" name="servicelist" class="selectpicker" multiple data-size="3"  data-live-search="true" data-size="3">
+                        </select>
+                    </div>
+                    <!-- <div class="dropdown">
+                        服务列表:
+                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                      请选择
+                      <span class="caret"></span>
+                    </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="#">服务1</a></li>
+                            <li><a href="#">服务2</a></li>
+                            <li><a href="#">服务3</a></li>
+                        </ul>
+                    </div> -->
+                    <div>&nbsp</div>
+                    <div class="input-group">
+                        <span>备注：</span>
+                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                        <input type="text" id="comment" name="comment" class="form-control" placeholder="备注" aria-describedby="basic-addon1">
+                        <input class="btn btn-default" id="send1" type="submit" value="确认修改">
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</body>
+
+</html>
