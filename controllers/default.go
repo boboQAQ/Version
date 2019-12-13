@@ -126,6 +126,8 @@ func (c *CreateController) WS() {
 					}
 				}
 				jsonservices = append(jsonservices, jsonservice)
+			} else if val.Name == "issuestatus" {
+				jsonversion.IssueStatus, _ = strconv.Atoi(val.Value)
 			} else {
 				jsonversion.Comment = val.Value
 			}

@@ -23,6 +23,7 @@ type Version struct {
 	IssueTime time.Time	 	`json:"issuetime"`
 	CreatTime time.Time	 	`json:"creattime"`
 	Comment string		 	`json:"comment"`
+	IssueStatus int         `json:"issuestatus"`
 }
 func checkErr (err error) {
 	if err != nil {
@@ -53,7 +54,7 @@ func GetAllStatus() []Version{
 		var serlists = make([]SerList,0)
 		var str string
 		flag := 0
-		err = rows.Scan(&version.ID, &version.VersionNumber, &str, &version.Status, &version.IssueTime, &version.CreatTime, &version.Comment)
+		err = rows.Scan(&version.ID, &version.VersionNumber, &str, &version.Status, &version.IssueTime, &version.CreatTime, &version.Comment, &version.IssueStatus)
 		for _, ch :=  range str {
 			if ch == '<' || ch == '>' {
 				if ch == '>' {
@@ -97,7 +98,7 @@ func GetAllStatus1() []Version{
 		var serlists = make([]SerList,0)
 		var str string
 		flag := 0
-		err = rows.Scan(&version.ID, &version.VersionNumber, &str, &version.Status, &version.IssueTime, &version.CreatTime, &version.Comment)
+		err = rows.Scan(&version.ID, &version.VersionNumber, &str, &version.Status, &version.IssueTime, &version.CreatTime, &version.Comment, &version.IssueStatus)
 		for _, ch :=  range str {
 			if ch == '<' || ch == '>' {
 				if ch == '>' {
@@ -138,7 +139,7 @@ func GetByID(ID int) Version {
 	var serlists = make([]SerList,0)
 	var str string
 	flag := 0
-	err = row.Scan(&version.ID, &version.VersionNumber, &str, &version.Status, &version.IssueTime, &version.CreatTime, &version.Comment)
+	err = row.Scan(&version.ID, &version.VersionNumber, &str, &version.Status, &version.IssueTime, &version.CreatTime, &version.Comment, &version.IssueStatus)
 	for _, ch :=  range str {
 		if ch == '<' || ch == '>' {
 			if ch == '>' {
@@ -170,14 +171,14 @@ func CreatVersion(version *Version) int64 {
 	db, err := sql.Open("mysql", dbusername+":"+dbpassword+"@tcp("+dbhostsip+")/"+dbname+"?charset=utf8&loc=Local")
 	checkErr(err)
 
-	stmt, err := db.Prepare("insert versions set  VersionNumber=?, ServiceList=?, Status=?, IssueTime=?, CreatTime=?, Comment=?")
+	stmt, err := db.Prepare("insert versions set  VersionNumber=?, ServiceList=?, Status=?, IssueTime=?, CreatTime=?, Comment=?, IssueStatus=?")
 	checkErr(err)
 	var servicelist string
 	for _, val := range version.ServiceList {
 		servicelist = servicelist + "<" + val.ServiceName + " " + val.ServiceNumber + ">"
 	}
 
-	res, err := stmt.Exec(version.VersionNumber, servicelist, version.Status, version.IssueTime, version.CreatTime, version.Comment)
+	res, err := stmt.Exec(version.VersionNumber, servicelist, version.Status, version.IssueTime, version.CreatTime, version.Comment, version.IssueStatus)
 	checkErr(err)
 
 	id, err := res.LastInsertId()
@@ -189,14 +190,14 @@ func UpdateVersion(version *Version) {
 	db, err := sql.Open("mysql", dbusername+":"+dbpassword+"@tcp("+dbhostsip+")/"+dbname+"?charset=utf8&loc=Local")
 	checkErr(err)
 
-	stmt, err := db.Prepare("update versions set VersionNumber=?, ServiceList=?, IssueTime=?, Comment=? where ID=?")
+	stmt, err := db.Prepare("update versions set ServiceList=?, Comment=? where ID=?")
 	checkErr(err)
 	var servicelist string
 	for _, val := range version.ServiceList {
 		servicelist = servicelist + "<" + val.ServiceName + " " + val.ServiceNumber + ">"
 	}
 
-	_, err = stmt.Exec(version.VersionNumber, servicelist, version.IssueTime, version.Comment, version.ID)
+	_, err = stmt.Exec(servicelist, version.Comment, version.ID)
 
 	checkErr(err)
 

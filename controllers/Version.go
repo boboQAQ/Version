@@ -90,14 +90,14 @@ func  broadcaster() {
 			_ = models.CreatVersion(&version)
 		case version := <- update:
 			version.IssueTime = time.Now()
-			beego.Info( VersionNumberUpdate(version.VersionNumber, 0) )
-			beego.Info( ServiceListUpdate(version.ServiceList, 0) )
+			//beego.Info( VersionNumberUpdate(version.VersionNumber, 0) )
+			//beego.Info( ServiceListUpdate(version.ServiceList, 0) )
 			models.UpdateVersion(&version)
 		case version := <- issue:
 			version.Status = true
 			version.IssueTime = time.Now()
-			beego.Info( VersionNumberUpdate(version.VersionNumber, 1) )
-			beego.Info( ServiceListUpdate(version.ServiceList, 1) )
+			beego.Info( VersionNumberUpdate(version.VersionNumber, version.IssueStatus) )
+			beego.Info( ServiceListUpdate(version.ServiceList, version.IssueStatus) )
 			models.IssueVersion(&version)
 		}
 

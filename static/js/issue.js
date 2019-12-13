@@ -14,6 +14,61 @@ $(function() {
         connected = false;
     };
 
+    //将不足10的补齐0
+    function getzf(num) {  
+        if(parseInt(num) < 10){  
+            num = '0'+num;  
+        }  
+        return num;  
+    }
+    //将此类2019-12-06T09:40:11Z 格式的时间转换为正常时间
+    function format(date1) {
+        var date = new Date(date1 );
+       date = date -  8 * 3600 * 1000;
+       var d = new Date(date);
+        var times= getzf(d.getFullYear()) + '-' + getzf((d.getMonth() + 1)) + '-'
+        + getzf(d.getDate()) + ' ' + getzf(d.getHours()) + ':' + getzf(d.getMinutes())
+        + ':' + getzf(d.getSeconds());
+
+         return times;
+    }
+
+    //给发布列表动态展示函数
+    function showTable(data) {
+         //向表格动态添加数据
+      var versiontab = $('#versiontable');
+      list = data.servicelist;
+      for(var i = 0; i < list.length; i++) {
+        var str1 = "";
+        str1 = "&lt" + list[i].servicename + " " + list[i].servicenumber + "&gt";
+        //先添加大版本的创建时间和发布时间备注等，之后再更改为list的创建时间的message等
+        versiontab.append('<tr class="success"> ' +
+        '<td>' + i + '</td>' + 
+        '<td>' + data.versionnumber + '</td>' +
+        '<td>' +  str1 +  '</td>' +
+        '<td>' + format(data.issuetime) + '</td>' +
+        '<td>' + format(data.creattime) + '</td>' +
+        '<td>' + 
+        '<button id="button1" type="button" class="but">合并</button>' +
+        '<button id="button2" type="button" class="but">发布</button>' + 
+        '</td>' +
+        '</tr>')
+      }
+    }
+    $(document).on('click','#button1',function(){
+       
+        console.log("点击合并");
+        console.log( $(this).parents("tr").find('td').eq(0).text());
+
+    })
+    $(document).on('click','#button2',function(){
+       
+        console.log("点击发布");
+        console.log( $(this).parents("tr").find('td').eq(2).text());
+
+    })
+
+ 
     socket.onmessage = function(event) {
         //解析json，之后初始化加载的更新页面
         var data = JSON.parse(event.data);
@@ -28,11 +83,11 @@ $(function() {
         }
        select2.selectpicker('refresh');
 
-
         Data = data.versions;              //将版本信息赋值给全局变量
         console.log("revice:", data2);     //输出解析之后的后台文件
         var select = $("#slpk1");        //给下拉框定义别名
         var list = data2[0].servicelist //默认选择了第一个，所以这是它的服务列表
+        showTable(data2[0]);
         var i = 1;
         for(var j = 0; j < data2.length; j++){   //使用jQuery动态给下拉框添加option
             if(data2[j].versionnumber == "")data2[j].versionnumber = "无效版本"+i++;
@@ -55,6 +110,8 @@ $(function() {
         var id = $("#slpk1").val();
         for(var j = 0; j < data.length; j++) {
             if(data[j].id == id) {
+                $("#versiontable tbody").html("");
+                showTable(data[j]);
                 var list = data[j].servicelist;
                 $("#slpk2").find("option:selected").attr("selected", false);
                 for(var k = 0; k < list.length; k++) {
