@@ -39,7 +39,7 @@ $("#inputMessage2").bind("input propertychange",function(event){
         var data = JSON.parse(event.data);
         for(var i = 0; i < data.length; i++) {
             var str1 = data[i].servicename + "&" + data[i].servicenumber;
-            var str2 = data[i].servicename + "服务版本号" + data[i].servicenumber;
+            var str2 = data[i].servicename ;
             select.append("<option value='"+str1+"'>"+str2+"</option>"); 
         }
         select.selectpicker('refresh');

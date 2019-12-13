@@ -67,6 +67,22 @@ func (c *HistoricController) Get() {
 	c.TplName = "historic.html"
 }
 
+//GetGroups 获取群组的服务信息
+func GetGroups() []models.Service {
+	var services = make([]models.Service, 0)
+	var service models.Service
+	projects := models.HTTPGetProjects()
+	
+	for _, project := range projects {
+		tag := models.HTTPGetTags(project.ID)
+		service.ServiceID = project.ID
+		service.ServiceName = project.Name
+		service.ServiceNumber = tag.Name
+		services = append(services, service)
+	}
+	return services
+}
+
 //WS 链接websocket
 func (c *CreateController) WS() {
 	beego.Info("进入WS1")
@@ -85,8 +101,7 @@ func (c *CreateController) WS() {
 	}
 	var version Version
 	version.conn = conn
-	services := models.GetAllService()
-
+	services := GetGroups()
 	data, err := json.Marshal(services)
 	err = version.conn.WriteMessage(websocket.TextMessage ,data)
 	beego.Info(services)
@@ -163,8 +178,8 @@ func (c *ModifyController) WS() {
 	//定义一个封装 后台服务列表和后台版本信息的对象
 	var sendmessage1 sendmessage
 
-	//获取后台服务列表的信息
-	services := models.GetAllService()
+	//获取服务列表的信息
+	services := GetGroups()
 	
 	//获取后台未发布的版本信息
 	versions := models.GetAllStatus()
@@ -245,7 +260,7 @@ func (c *IssueController) WS() {
 	var sendmessage1 sendmessage
 
 	//获取后台服务列表的信息
-	services := models.GetAllService()
+	services := GetGroups()
 	
 	//获取后台未发布的版本信息
 	versions := models.GetAllStatus()

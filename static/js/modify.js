@@ -30,7 +30,7 @@ $(function() {
         var select2 = $("#slpk2");       //下面给服务列表动态添加服务 
         for(var i = 0; i < data1.length; i++) {
             var str1 = data1[i].servicename + "&" + data1[i].servicenumber;
-            var str2 = data1[i].servicename + "服务版本号" + data1[i].servicenumber;
+            var str2 = data1[i].servicename ;
             select2.append("<option value='"+str1+"'>"+str2+"</option>"); 
         }
        select2.selectpicker('refresh');

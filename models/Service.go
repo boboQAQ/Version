@@ -2,19 +2,114 @@ package models
 
 import (
 	"time"
+	"strconv"
+	_ "strings"
+	"net/http"
+	"io/ioutil"
 	"database/sql"
+	"encoding/json"
+	"github.com/astaxie/beego"
 	_ "github.com/go-sql-driver/mysql"
 	
 )
-// Service 服务号的数据结构
+
+// Service 传递给前端的服务列表的的数据结构
 type Service struct {
-	ServiceID int 				`json:"serviceid"`
-	ServiceName string 			`json:"servicename"`
-	ServiceNumber string 		`json:"servicenumber"`
-	NumberModifyTime time.Time 	`json:"Numbermodifytime"`
-	ServiceStatus bool 			`json:"servicestatus"`
+	ServiceID int 				`json:"serviceid"`//项目ID
+	ServiceName string 			`json:"servicename"`//项目Name
+	ServiceNumber string 		`json:"servicenumber"`//标签Name
+	NumberModifyTime time.Time 	`json:"Numbermodifytime"`//未定义
+	ServiceStatus bool 			`json:"servicestatus"`//未定义
 
 }
+// Projects 接收调用gitlab的接口 获取一个群组下的所有服务工程的结构体
+type Projects struct {
+	ID int `json:"id"`
+	Name string `json:"name"`
+}
+
+// Tags 接收调用gitlab的接口 获取一个project下的所有标签的结构体
+type Tags struct {
+	Commits Commit `json:"commit"`
+	Name string `json:"name"`  //标签名
+	Target string `json:"target"`
+	Message string `json:"message"` //该标签的一个解释短句
+}
+//Commit 接收commit信息的结构体，
+type Commit struct {
+	ID string `json:"id"` 			//用于合并之后打标签使用的ref 
+    ShortID string `json:"short_id"`//使用提交后的由安全散列算法得到的一个固定长度的字符串
+    Title string `json:"title"`
+    CreatedAt time.Time `json:"created_at"`
+    ParentIds string `json:"parent_ids"`
+    Message string `json:"message"`
+    AuthorName string `json:"author_name"`
+    AuthorEmail string `json:"author_email"`
+    CommitterName string `json:"committer_name"`
+    CommitterEmail string `json:"committer_email"`
+    CommittedDate time.Time `json:"committed_date"`
+}
+
+//HTTPGetProjects 调用get接口获取812群组下的所有服务id及名字
+func HTTPGetProjects() []Projects {
+
+    client := &http.Client{}
+	url := "https://git.ucloudadmin.com/api/v4/groups/812/projects"
+	//新建一个请求，参数为方法，路径，body参数
+	res, err := http.NewRequest("GET",url, nil)
+	//添加一个 --header
+    res.Header.Add("PRIVATE-TOKEN", "vs68e5weD4Z9gSwWEA8u")
+    response, _ := client.Do(res)
+
+	checkErr(err)
+	defer response.Body.Close()
+	//读出返回的响应的主体
+	body, err := ioutil.ReadAll(response.Body)
+	checkErr(err)
+
+    beego.Info("Projects get" + string(body))
+
+    var data []Projects
+	json.Unmarshal(body, &data)
+
+	beego.Info("json解析后得到"  )
+	beego.Info( data)
+	
+	return data
+}
+
+//HTTPGetTags 调用get接口获取id项目组下的所有标签的信息，按名称以相反的字母顺序排序
+func HTTPGetTags(id int) Tags {
+
+    client := &http.Client{}
+    url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id) + "/repository/tags"
+
+    res, err := http.NewRequest("GET",url, nil)
+    res.Header.Add("PRIVATE-TOKEN", "vs68e5weD4Z9gSwWEA8u")
+    response, _ := client.Do(res)
+
+	checkErr(err)
+    defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	checkErr(err)
+
+    beego.Info("Tage get" + string(body))
+
+	var data []Tags
+	var data1 Tags
+	json.Unmarshal(body, &data)
+	data1 = data[0]
+	beego.Info(data1)
+	
+	return data1
+}
+
+
+
+
+
+
 //GetAllService 获取全部未禁用的服务
 func GetAllService() []Service {
 	db, err := sql.Open("mysql", dbusername+":"+dbpassword+"@tcp("+dbhostsip+")/"+dbname+"?charset=utf8&parseTime=true")
