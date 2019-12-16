@@ -38,7 +38,7 @@ $("#inputMessage2").bind("input propertychange",function(event){
         var select = $("#slpk"); 
         var data = JSON.parse(event.data);
         for(var i = 0; i < data.length; i++) {
-            var str1 = data[i].servicename + "&" + data[i].servicenumber;
+            var str1 = data[i].serviceid;
             var str2 = data[i].servicename ;
             select.append("<option value='"+str1+"'>"+str2+"</option>"); 
         }

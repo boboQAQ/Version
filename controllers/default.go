@@ -127,19 +127,14 @@ func (c *CreateController) WS() {
 			if val.Name == "versionnumber" {
 				jsonversion.VersionNumber = val.Value
 			} else if val.Name == "servicelist" {
+				//传入项目id和项目名
 				jsonservice.ServiceName, jsonservice.ServiceNumber = "", ""
-				flag := 0
-				for _, ch := range val.Value {
-					if ch == '&' {
-						flag = 1
-						continue
-					}
-					if flag == 0 {
-						jsonservice.ServiceName += string(ch)
-					} else {
-						jsonservice.ServiceNumber += string(ch)
-					}
-				}
+				id, _ := strconv.Atoi(val.Value)
+				project := models.HTTPGetProject(id)
+				beego.Info(project.ID )
+				beego.Info( project.Name)
+				jsonservice.ServiceName = project.Name
+				jsonservice.ServiceNumber = val.Value
 				jsonservices = append(jsonservices, jsonservice)
 			} else if val.Name == "issuestatus" {
 				jsonversion.IssueStatus, _ = strconv.Atoi(val.Value)
@@ -212,20 +207,10 @@ func (c *ModifyController) WS() {
 			} else if val.Name == "servicelist" {
 				//解析服务列表结构体中的数据，仅含有服务名和服务号
 				jsonservice.ServiceName, jsonservice.ServiceNumber = "", ""
-				flag := 0
-				for _, ch := range val.Value {
-					if ch == '&' {
-						flag = 1
-						continue
-					}
-					if flag == 0 {
-						jsonservice.ServiceName += string(ch)
-					} else {
-						//处理更新时，绑定的小服务的版本小更新
-						//if()
-						jsonservice.ServiceNumber += string(ch)
-					}
-				}
+				id, _ := strconv.Atoi(val.Value)
+				project := models.HTTPGetProject(id)
+				jsonservice.ServiceName = project.Name
+				jsonservice.ServiceNumber = val.Value
 				jsonservices = append(jsonservices, jsonservice)
 			} else {
 				jsonversion.Comment = val.Value
@@ -280,15 +265,37 @@ func (c *IssueController) WS() {
 		if err != nil {
 			break
 		}
-
-		var jsonversion models.Version
-		var jsonmessage []message
-		err = json.Unmarshal(msgStr, &jsonmessage)
-		id, _ := strconv.Atoi(jsonmessage[0].Value)
-		jsonversion = models.GetByID(id)
-		beego.Info(jsonversion.ID)
 		beego.Info("WS3-----------receive: " + string(msgStr))
-		issue <- jsonversion
+		var str = ""
+		var i = 0
+		for _, ch := range string(msgStr) {
+			i++
+			if ch == ' ' { 
+				break
+			}
+			str += string(ch)
+		}
+		number, _ := strconv.Atoi(str)
+		if number % 10 == 0 {
+			id := number / 10
+			listmergerequests := models.ListMergeRequest(id)
+			//如果没有合并请求，则需要创建合并请求
+			if len(listmergerequests) == 0 {
+				listmergerequest := models.CreateMergeRequest(id)
+				listmergerequests = append(listmergerequests, listmergerequest)
+			}
+			merge <- listmergerequests
+			ch3 <- version
+		} else {
+			id := number / 10
+			tag := models.HTTPGetTags(id)
+			str = string(msgStr)[i:]
+			id, _ = strconv.Atoi(str)
+			ver := models.GetByID(id)
+			
+			tags <- tag
+			issue <- ver
+		}
 
 	}
 	

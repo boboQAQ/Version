@@ -31,7 +31,7 @@ func VersionNumberUpdate(str string, type1 int) string {
 			versionnumber1 += string(val)
 		}
 	}
-	if type1 == 0 {
+	if type1 == 1 {
 		num, err:= strconv.Atoi(versionnumber3)
 		checkErr(err)
 		num++

@@ -39,18 +39,17 @@ $(function() {
       var versiontab = $('#versiontable');
       list = data.servicelist;
       for(var i = 0; i < list.length; i++) {
-        var str1 = "";
-        str1 = "&lt" + list[i].servicename + " " + list[i].servicenumber + "&gt";
         //先添加大版本的创建时间和发布时间备注等，之后再更改为list的创建时间的message等
         versiontab.append('<tr class="success"> ' +
         '<td>' + i + '</td>' + 
         '<td>' + data.versionnumber + '</td>' +
-        '<td>' +  str1 +  '</td>' +
+        '<td>' +  list[i].servicename +  '</td>' +
+        '<td>' +  list[i].servicenumber +  '</td>' +
         '<td>' + format(data.issuetime) + '</td>' +
         '<td>' + format(data.creattime) + '</td>' +
         '<td>' + 
-        '<button id="button1" type="button" class="but">合并</button>' +
-        '<button id="button2" type="button" class="but">发布</button>' + 
+        '<button id="button1" type="button" class="but" value="0">合并</button>' +
+        '<button id="button2" type="button" class="but" value="1">发布</button>' + 
         '</td>' +
         '</tr>')
       }
@@ -58,13 +57,19 @@ $(function() {
     $(document).on('click','#button1',function(){
        
         console.log("点击合并");
-        console.log( $(this).parents("tr").find('td').eq(0).text());
+        var send = $(this).parents("tr").find('td').eq(3).text() + document.getElementById("button1").value;
+        console.log(send);
+        socket.send(send);
 
     })
     $(document).on('click','#button2',function(){
        
         console.log("点击发布");
+        console.log($("#slpk1").val());
         console.log( $(this).parents("tr").find('td').eq(2).text());
+        var send = $(this).parents("tr").find('td').eq(3).text() + document.getElementById("button2").value;
+        send = send + " " + $("#slpk1").val();
+        socket.send(send)
 
     })
 
@@ -72,13 +77,15 @@ $(function() {
     socket.onmessage = function(event) {
         //解析json，之后初始化加载的更新页面
         var data = JSON.parse(event.data);
+
+        console.log(data)
         var data1 = data.services;
         var data2 = data.versions;
 
         var select2 = $("#slpk2");       //下面给服务列表动态添加服务 
         for(var i = 0; i < data1.length; i++) {
-            var str1 = data1[i].servicename + "&" + data1[i].servicenumber;
-            var str2 = data1[i].servicename + "服务版本号" + data1[i].servicenumber;
+            var str1 =  data1[i].serviceid;
+            var str2 = data1[i].servicename ;
             select2.append("<option value='"+str1+"'>"+str2+"</option>"); 
         }
        select2.selectpicker('refresh');
@@ -97,7 +104,7 @@ $(function() {
        
        for(var j = 0; j < list.length; j++) {   //根据后台数据，在服务列表的下拉框中选出该大版本下挂钩的服务
             var str
-            str = list[j].servicename + "&" + list[j].servicenumber;
+            str =  list[j].servicenumber;
             $("#slpk2 option[value='"+str+"']").prop("selected","selected");  
        }
        select2.selectpicker('refresh');
@@ -110,13 +117,14 @@ $(function() {
         var id = $("#slpk1").val();
         for(var j = 0; j < data.length; j++) {
             if(data[j].id == id) {
+                //清空表格
                 $("#versiontable tbody").html("");
                 showTable(data[j]);
                 var list = data[j].servicelist;
                 $("#slpk2").find("option:selected").attr("selected", false);
                 for(var k = 0; k < list.length; k++) {
                     var str
-                    str = list[k].servicename + "&" + list[k].servicenumber;
+                    str = list[k].servicenumber;
                     $("#slpk2 option[value='"+str+"']").prop("selected","selected");       
                 }
                 $("#slpk2").selectpicker('refresh');

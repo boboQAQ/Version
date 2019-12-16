@@ -29,7 +29,7 @@ $(function() {
 
         var select2 = $("#slpk2");       //下面给服务列表动态添加服务 
         for(var i = 0; i < data1.length; i++) {
-            var str1 = data1[i].servicename + "&" + data1[i].servicenumber;
+            var str1 = data1[i].serviceid ;
             var str2 = data1[i].servicename ;
             select2.append("<option value='"+str1+"'>"+str2+"</option>"); 
         }
@@ -49,7 +49,7 @@ $(function() {
        
        for(var j = 0; j < list.length; j++) {   //根据后台数据，在服务列表的下拉框中选出该大版本下挂钩的服务
             var str
-            str = list[j].servicename + "&" + list[j].servicenumber;
+            str = list[j].servicenumber;
             $("#slpk2 option[value='"+str+"']").prop("selected","selected");  
        }
        select2.selectpicker('refresh');
@@ -70,7 +70,7 @@ $(function() {
                 $('#slpk2').find("option:selected").attr("selected", false);
                 for(var k = 0; k < list.length; k++) {
                     var str
-                    str = list[k].servicename + "&" + list[k].servicenumber;
+                    str = list[k].servicenumber;
                     $("#slpk2 option[value='"+str+"']").prop("selected","selected");    //       
                 }
                 $("#slpk2").selectpicker('refresh');

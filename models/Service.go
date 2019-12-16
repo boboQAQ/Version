@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 	"strconv"
-	_ "strings"
+	"strings"
 	"net/http"
 	"io/ioutil"
 	"database/sql"
@@ -77,8 +77,55 @@ func HTTPGetProjects() []Projects {
 	
 	return data
 }
+//HTTPGetProject 调用get接口获取项目id为id的项目信息
+func HTTPGetProject(id int) Projects {
 
-//HTTPGetTags 调用get接口获取id项目组下的所有标签的信息，按名称以相反的字母顺序排序
+    client := &http.Client{}
+	url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id)
+	//新建一个请求，参数为方法，路径，body参数
+	res, err := http.NewRequest("GET",url, nil)
+	//添加一个 --header
+    res.Header.Add("PRIVATE-TOKEN", "vs68e5weD4Z9gSwWEA8u")
+    response, _ := client.Do(res)
+
+	checkErr(err)
+	defer response.Body.Close()
+	//读出返回的响应的主体
+	body, err := ioutil.ReadAll(response.Body)
+	beego.Info(string(body))
+	checkErr(err)
+
+    var data Projects
+	json.Unmarshal(body, &data)
+
+	beego.Info("json解析后得到"  )
+	beego.Info( data)
+	
+	return data
+}
+// GetCommitSha 获取某个项目的最新的sha
+func GetCommitSha(id int) string {
+	client := &http.Client{}
+
+	url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id) + "/repository/commits"
+
+	res, err := http.NewRequest("GET", url, nil)
+	checkErr(err)
+	res.Header.Add("PRIVATE-TOKEN", "vs68e5weD4Z9gSwWEA8u")
+
+	resp, err := client.Do(res)
+	checkErr(err)
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	checkErr(err)
+	var commits []Commit
+	json.Unmarshal(body, &commits)
+	return commits[0].ID
+
+}
+
+//HTTPGetTags 调用get接口获取id项目组下的所有标签的信息，按名称以相反的字母顺序排序，并返回第一个
 func HTTPGetTags(id int) Tags {
 
     client := &http.Client{}
@@ -103,6 +150,29 @@ func HTTPGetTags(id int) Tags {
 	beego.Info(data1)
 	
 	return data1
+}
+//HTTPPostTag 创建标签
+func HTTPPostTag(id int, shaid, tagname string) string{
+	client := &http.Client{}
+	url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id) + "/repository/tags"
+	bd := "id="+shaid+"&tag_name="+tagname+"&ref="+shaid+"&message=api接口在HTTP上调用后，给master合并后打上标签"
+    req, err := http.NewRequest("POST", url, strings.NewReader(bd))
+    checkErr(err)
+ 
+    req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+    req.Header.Set("PRIVATE-TOKEN", "vs68e5weD4Z9gSwWEA8u")
+ 
+	resp, err := client.Do(req)
+	checkErr(err)
+    defer resp.Body.Close()
+ 
+	body, err := ioutil.ReadAll(resp.Body)
+	checkErr(err)
+	var errmessage ErrMessage
+	json.Unmarshal(body, &errmessage)
+
+	return errmessage.Message
+
 }
 
 

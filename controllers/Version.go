@@ -3,10 +3,10 @@ package controllers
 import "github.com/astaxie/beego"
 import (
 		"time"
+		_ "strconv"
        "Demo/models"
 	   "encoding/json"
-	
-
+	   "github.com/gorilla/websocket"
 )
 // VersionController 版本控制器
 type VersionController struct {
@@ -73,6 +73,11 @@ var (
 	create = make(chan models.Version, 10)
 	update = make(chan models.Version, 10)
 	issue  = make(chan models.Version, 10)
+	tags    = make(chan models.Tags, 10)
+	merge  = make(chan []models.MergeRequest, 10)
+
+	//发布页面后端对前端的通信通道
+	ch3 = make(chan Version, 1)
 
 )
 func init() {
@@ -93,12 +98,26 @@ func  broadcaster() {
 			//beego.Info( VersionNumberUpdate(version.VersionNumber, 0) )
 			//beego.Info( ServiceListUpdate(version.ServiceList, 0) )
 			models.UpdateVersion(&version)
-		case version := <- issue:
-			version.Status = true
-			version.IssueTime = time.Now()
-			beego.Info( VersionNumberUpdate(version.VersionNumber, version.IssueStatus) )
-			beego.Info( ServiceListUpdate(version.ServiceList, version.IssueStatus) )
-			models.IssueVersion(&version)
+		//case tag := <- issue:
+			//tagname := tag.Name
+		
+			//beego.Info("更新标签名" + tagname)
+			// version.Status = true
+			// version.IssueTime = time.Now()
+			// beego.Info( VersionNumberUpdate(version.VersionNumber, version.IssueStatus) )
+			// beego.Info( ServiceListUpdate(version.ServiceList, version.IssueStatus) )
+			// models.IssueVersion(&version)
+		case merges := <- merge:
+			client := <- ch3
+			for _, MR := range merges {
+				mergemessage := models.Merge(MR.ID, MR.IID)
+				if mergemessage != "" {
+					data, err := json.Marshal(mergemessage)
+					checkErr(err)
+					client.conn.WriteMessage(websocket.TextMessage, data)
+					break
+				}
+			}
 		}
 
 	}
