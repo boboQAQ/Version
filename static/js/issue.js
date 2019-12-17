@@ -40,14 +40,14 @@ $(function() {
       var versiontab = $('#versiontable');
       list = data.servicelist;
       for(var i = 0; i < list.length; i++) {
-        //if(list[i].servicenumber == "&&&")continue;
-        //先添加大版本的创建时间和发布时间备注等，之后再更改为list的创建时间的message等
+        //服务版本如若是“&&&”则代表已经发布过，则不添加到表格中
+        if(list[i].servicenumber == "&&&")continue;
+        //表格添加的创建的版本号，服务名，服务id，版本创建时间
         versiontab.append('<tr class="success"> ' +
         '<td>' + i + '</td>' + 
         '<td>' + data.versionnumber + '</td>' +
         '<td>' +  list[i].servicename +  '</td>' +
         '<td>' +  list[i].servicenumber +  '</td>' +
-        '<td>' + format(data.issuetime) + '</td>' +
         '<td>' + format(data.creattime) + '</td>' +
         '<td>' + 
         '<button id="button1" type="button" class="but" value="0">合并</button>' +
@@ -72,7 +72,7 @@ $(function() {
         var send = $(this).parents("tr").find('td').eq(3).text() + document.getElementById("button2").value;
         send = send + " " + $("#slpk1").val();
         socket.send(send);
-        refresh();
+        window.location.reload();
 
     })
 
@@ -157,18 +157,19 @@ $(function() {
         sendMessage();
     });
     function sendMessage() {
-        console.log("点击发布")
-        var t = $('#form1').serializeArray();
+        console.log("点击刷新页面")
+        window.location.reload();
+        // var t = $('#form1').serializeArray();
         // for(var j = 0; j < Data.length; j++){
         //     if(Data[j].id == t[0].value){
         //         t[0].value = Data[j].versionnumber;
         //         break;
         //     }
         // }
-        console.log(JSON.stringify(t));
-        var json_str = JSON.stringify(t);
+        // console.log(JSON.stringify(t));
+        // var json_str = JSON.stringify(t);
         
-        socket.send(json_str);
+        // socket.send(json_str);
         
 
     }

@@ -13,6 +13,27 @@ $(function() {
         console.log("websocket close");
         connected = false;
     };
+
+    //解决iframe为子窗口刷新后跳转页面回转index默认页面的问题
+    // function loadIframe(url) {
+    //     //获取url链接
+    //     var u = window.location.href;
+    //     //因为每次获取的链接中都有之前的旧锚点，
+    //     //所以需要把#之后的旧锚点去掉再来加新的锚点（即传入的url参数）
+    //     var end = u.indexOf("#");
+    //     var rurl = u.substring(0,end);
+    //     //设置新的锚点
+    //     window.location.href = rurl + "#" + url;
+    // }
+    
+    // var hash = location.hash;
+    // var url = hash.substring(1,hash.length);
+    // $("#iframe").attr("src", url); //别忘了加id
+
+
+
+
+
     //将不足10的补齐0
     function getzf(num) {  
         if(parseInt(num) < 10){  

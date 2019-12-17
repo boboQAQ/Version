@@ -11,9 +11,14 @@ func init() {
 	beego.Router("/WS2", &controllers.ModifyController{},"get:WS")
 	beego.Router("/WS3", &controllers.IssueController{},"get:WS")
 	beego.Router("/WS4", &controllers.HistoricController{},"get:WS")
+	beego.Router("/views/create.html", &controllers.HistoricController{})
 	beego.Router("/views/historic.html", &controllers.HistoricController{})
-	beego.Router("/views/create.html", &controllers.CreateController{})
 	beego.Router("/views/modify.html", &controllers.ModifyController{})
 	beego.Router("/views/issue.html", &controllers.IssueController{})
+
+	beego.Router("/historic.html", &controllers.HistoricController{})
+	beego.Router("/create.html", &controllers.CreateController{})
+	beego.Router("/modify.html", &controllers.ModifyController{})
+	beego.Router("/issue.html", &controllers.IssueController{})
 	
 }

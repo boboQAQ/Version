@@ -93,8 +93,7 @@ $("#inputMessage2").bind("input propertychange",function(event){
         socket.send(json_str);
         $('#slpk').find("option:selected").attr("selected", false);
         $('.selectpicker').selectpicker('refresh'); 
-       
-      
+        window.location.reload();
         /*
             {
                 var selectpicker_name = "";

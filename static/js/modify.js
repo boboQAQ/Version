@@ -108,6 +108,7 @@ $(function() {
         socket.send(json_str);
         $('#slpk2').find("option:selected").attr("selected", false);
         $('#slpk2').selectpicker('refresh'); 
+        window.location.reload();
 
     }
 

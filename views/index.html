@@ -7,6 +7,26 @@
     <link href="/static/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
     <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" >
+            $(function(){
+			    $("#a1").click(function(){
+			     var name= $(this).attr("name");
+			     location.hash = name;//设置锚点
+			    })
+			    $("#a2").click(function(){
+			     var name= $(this).attr("name");
+			     location.hash = name;//设置锚点
+                })
+                $("#a3").click(function(){
+			     var name= $(this).attr("name");
+			     location.hash = name;//设置锚点
+			    })
+			    $("#a4").click(function(){
+			     var name= $(this).attr("name");
+			     location.hash = name;//设置锚点
+			    })
+			})
+    </script>
 
 </head>
 
@@ -16,16 +36,16 @@
             <div class="span2">
                 <ul class="nav nav-pills nav-stacked">
                     <li>
-                        <a href="/views/create.html" target="bd">创建版本</a>
+                        <a href="/views/create.html" id="a1" name="create.html" target="bd">创建版本</a>
                     </li>
                     <li>
-                        <a href="/views/modify.html" target="bd">修改版本</a>
+                        <a href="/views/modify.html" id="a2" name="modify.html" target="bd">修改版本</a>
                     </li>
                     <li>
-                        <a href="/views/issue.html" target="bd">发布版本</a>
+                        <a href="/views/issue.html" id="a3" name="issue.html" target="bd">发布版本</a>
                     </li>
                     <li>
-                        <a href="/views/historic.html" target="bd">历史版本</a>
+                        <a href="/views/historic.html" id="a4" name="historic.html" target="bd">历史版本</a>
                     </li>
 
                 </ul>
@@ -34,7 +54,20 @@
             <div class="span10">
                 <div>
                     <!-- 内容主体区域 -->
-                    <iframe src="/views/create.html" frameborder="0" name="bd" style="width:100%;height:100%;"></iframe>
+                    <iframe id="iframe" src="/views/create.html" frameborder="0" name="bd" style="width:100%;height:100%;"></iframe>
+                    <script type="text/javascript" >
+                            window.onhashchange = function(){//监听锚点的变化
+                                var hash = location.hash;
+                                hash = hash.substring(1,hash.length);
+                                //alert(hash);
+                                $("#iframe").attr("src",hash);
+                            }
+                            document.addEventListener('DOMContentLoaded', function () {//刷新
+                                var hash = location.hash;
+                                var url = hash.substring(1,hash.length);
+                                $("#iframe").attr("src", url);
+                            }, false)
+                    </script>
                 </div>
             </div>
 
