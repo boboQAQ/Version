@@ -209,10 +209,14 @@ func IssueVersion(version *Version) {
 	db, err := sql.Open("mysql", dbusername+":"+dbpassword+"@tcp("+dbhostsip+")/"+dbname+"?charset=utf8&loc=Local")
 	checkErr(err)
 
-	stmt, err := db.Prepare("update versions set Status=?, IssueTime=? where ID=?")
+	stmt, err := db.Prepare("update versions set ServiceList=?, Status=?, IssueTime=? where ID=?")
 	checkErr(err)
+	var servicelist string
+	for _, val := range version.ServiceList {
+		servicelist = servicelist + "<" + val.ServiceName + " " + val.ServiceNumber + ">"
+	}
 	
-	_, err = stmt.Exec(version.Status, version.IssueTime, version.ID)
+	_, err = stmt.Exec(servicelist, version.Status, version.IssueTime, version.ID)
 	checkErr(err)
 
 	db.Close()

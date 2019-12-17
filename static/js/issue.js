@@ -1,6 +1,7 @@
 $(function() {
 
     var Data
+    var num = 0;
     //创建websocket链接
     var socket = new WebSocket("ws://127.0.0.1:8080/WS3");
 
@@ -39,6 +40,7 @@ $(function() {
       var versiontab = $('#versiontable');
       list = data.servicelist;
       for(var i = 0; i < list.length; i++) {
+        //if(list[i].servicenumber == "&&&")continue;
         //先添加大版本的创建时间和发布时间备注等，之后再更改为list的创建时间的message等
         versiontab.append('<tr class="success"> ' +
         '<td>' + i + '</td>' + 
@@ -69,46 +71,53 @@ $(function() {
         console.log( $(this).parents("tr").find('td').eq(2).text());
         var send = $(this).parents("tr").find('td').eq(3).text() + document.getElementById("button2").value;
         send = send + " " + $("#slpk1").val();
-        socket.send(send)
+        socket.send(send);
 
     })
 
  
     socket.onmessage = function(event) {
+        num++;
+        if(num>1)
+        {
+            var data = JSON.parse(event.data);
+            window.alert(data);
+            return ;
+        }
         //解析json，之后初始化加载的更新页面
         var data = JSON.parse(event.data);
+            console.log(data)
+            var data1 = data.services;
+            var data2 = data.versions;
+            console.log(data1)
+            var select2 = $("#slpk2");       //下面给服务列表动态添加服务 
+            for(var i = 0; i < data1.length; i++) {
+                var str1 =  data1[i].serviceid;
+                var str2 = data1[i].servicename ;
+                select2.append("<option value='"+str1+"'>"+str2+"</option>"); 
+            }
+            select2.selectpicker('refresh');
 
-        console.log(data)
-        var data1 = data.services;
-        var data2 = data.versions;
-
-        var select2 = $("#slpk2");       //下面给服务列表动态添加服务 
-        for(var i = 0; i < data1.length; i++) {
-            var str1 =  data1[i].serviceid;
-            var str2 = data1[i].servicename ;
-            select2.append("<option value='"+str1+"'>"+str2+"</option>"); 
-        }
-       select2.selectpicker('refresh');
-
-        Data = data.versions;              //将版本信息赋值给全局变量
-        console.log("revice:", data2);     //输出解析之后的后台文件
-        var select = $("#slpk1");        //给下拉框定义别名
-        var list = data2[0].servicelist //默认选择了第一个，所以这是它的服务列表
-        showTable(data2[0]);
-        var i = 1;
-        for(var j = 0; j < data2.length; j++){   //使用jQuery动态给下拉框添加option
-            if(data2[j].versionnumber == "")data2[j].versionnumber = "无效版本"+i++;
-            select.append("<option value='"+data2[j].id+"'>"+data2[j].versionnumber+"</option>"); 
-        }
-       select.selectpicker('refresh');   //刷新下拉框
-       
-       for(var j = 0; j < list.length; j++) {   //根据后台数据，在服务列表的下拉框中选出该大版本下挂钩的服务
-            var str
-            str =  list[j].servicenumber;
-            $("#slpk2 option[value='"+str+"']").prop("selected","selected");  
-       }
-       select2.selectpicker('refresh');
-       document.getElementById("comment").value = data2[0].comment; //将选中的版本号的备注显示在页面
+            Data = data.versions;              //将版本信息赋值给全局变量
+            console.log("revice:", data2);     //输出解析之后的后台文件
+            var select = $("#slpk1");        //给下拉框定义别名
+            var list = data2[0].servicelist //默认选择了第一个，所以这是它的服务列表
+            showTable(data2[0]);
+            var i = 1;
+            for(var j = 0; j < data2.length; j++){   //使用jQuery动态给下拉框添加option
+                if(data2[j].versionnumber == "")data2[j].versionnumber = "无效版本"+i++;
+                select.append("<option value='"+data2[j].id+"'>"+data2[j].versionnumber+"</option>"); 
+            }
+            select.selectpicker('refresh');   //刷新下拉框
+        
+            for(var j = 0; j < list.length; j++) {   //根据后台数据，在服务列表的下拉框中选出该大版本下挂钩的服务
+                var str
+                str =  list[j].servicenumber;
+                $("#slpk2 option[value='"+str+"']").prop("selected","selected");  
+            }
+            select2.selectpicker('refresh');
+            document.getElementById("comment").value = data2[0].comment; //将选中的版本号的备注显示在页面
+        
     }
 
 

@@ -31,7 +31,7 @@ type ErrMessage struct {
 //ListMergeRequest 列出项目下所有的合并请求
 func ListMergeRequest(id int) []MergeRequest {
 	client := &http.Client{}
-	url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id) + "/merge_requests"
+	url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id) + "/merge_requests?state=opened"
 	//创建一个新的请求
     req, err := http.NewRequest("GET", url, nil)
 	checkErr(err)
@@ -47,9 +47,10 @@ func ListMergeRequest(id int) []MergeRequest {
     body, err := ioutil.ReadAll(resp.Body)
 	checkErr(err)
 
-	beego.Info(body)
+	//beego.Info(body)
 	var mergerequest []MergeRequest
 	json.Unmarshal(body, &mergerequest)
+	beego.Info(mergerequest)
 	return mergerequest
 }
 
@@ -74,7 +75,7 @@ func CreateMergeRequest(id int) MergeRequest{
     body, err := ioutil.ReadAll(resp.Body)
 	checkErr(err)
 
-	beego.Info(body)
+	//beego.Info(body)
 	var mergerequest MergeRequest
 	json.Unmarshal(body, &mergerequest)
 	return mergerequest

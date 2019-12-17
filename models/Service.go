@@ -28,6 +28,7 @@ type Projects struct {
 	Name string `json:"name"`
 }
 
+
 // Tags 接收调用gitlab的接口 获取一个project下的所有标签的结构体
 type Tags struct {
 	Commits Commit `json:"commit"`
@@ -67,8 +68,6 @@ func HTTPGetProjects() []Projects {
 	body, err := ioutil.ReadAll(response.Body)
 	checkErr(err)
 
-    beego.Info("Projects get" + string(body))
-
     var data []Projects
 	json.Unmarshal(body, &data)
 
@@ -106,7 +105,7 @@ func HTTPGetProject(id int) Projects {
 // GetCommitSha 获取某个项目的最新的sha
 func GetCommitSha(id int) string {
 	client := &http.Client{}
-
+	
 	url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id) + "/repository/commits"
 
 	res, err := http.NewRequest("GET", url, nil)
@@ -141,13 +140,11 @@ func HTTPGetTags(id int) Tags {
 	body, err := ioutil.ReadAll(response.Body)
 	checkErr(err)
 
-    beego.Info("Tage get" + string(body))
 
 	var data []Tags
 	var data1 Tags
 	json.Unmarshal(body, &data)
 	data1 = data[0]
-	beego.Info(data1)
 	
 	return data1
 }

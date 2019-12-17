@@ -259,7 +259,8 @@ func (c *IssueController) WS() {
 	
 	beego.Info("服务端已发送信息到客户端")
 	defer version.conn.Close()
-
+	var mp1 = make(map[int]bool)
+	var mp2 = make(map[int]bool)
 	for {
 		_, msgStr, err := version.conn.ReadMessage()
 		if err != nil {
@@ -278,21 +279,41 @@ func (c *IssueController) WS() {
 		number, _ := strconv.Atoi(str)
 		if number % 10 == 0 {
 			id := number / 10
+			if mp1[id] == true {
+				data, err := json.Marshal("请勿重复合并")
+				checkErr(err)
+				err = version.conn.WriteMessage(websocket.TextMessage, data)
+				checkErr(err)
+				continue
+			}
+			mp1[id] = true
 			listmergerequests := models.ListMergeRequest(id)
 			//如果没有合并请求，则需要创建合并请求
+			beego.Info("合并请求列表")
+			beego.Info(len(listmergerequests))
 			if len(listmergerequests) == 0 {
 				listmergerequest := models.CreateMergeRequest(id)
 				listmergerequests = append(listmergerequests, listmergerequest)
 			}
-			merge <- listmergerequests
-			ch3 <- version
+			beego.Info(listmergerequests)
+			 merge <- listmergerequests
+			 ch3 <- version
 		} else {
-			id := number / 10
-			tag := models.HTTPGetTags(id)
+			id1 := number / 10
+			if mp2[id1] == true {
+				data, err := json.Marshal("请勿重复发布")
+				checkErr(err)
+				err = version.conn.WriteMessage(websocket.TextMessage, data)
+				checkErr(err)
+				continue
+			}
+			mp2[id1] = true
+			tag := models.HTTPGetTags(id1)
 			str = string(msgStr)[i:]
-			id, _ = strconv.Atoi(str)
-			ver := models.GetByID(id)
-			
+			id2, _ := strconv.Atoi(str)
+			ver := models.GetByID(id2)
+			projectid <- id1
+			ch3 <- version
 			tags <- tag
 			issue <- ver
 		}
