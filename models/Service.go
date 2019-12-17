@@ -144,15 +144,19 @@ func HTTPGetTags(id int) Tags {
 	var data []Tags
 	var data1 Tags
 	json.Unmarshal(body, &data)
-	data1 = data[0]
+	if len(data) == 0 {
+		_, data1 = HTTPPostTag(id, "v0.0.1")
+	} else {
+		data1 = data[0]
+	}
 	
 	return data1
 }
 //HTTPPostTag 创建标签
-func HTTPPostTag(id int, shaid, tagname string) string{
+func HTTPPostTag(id int, tagname string) (string, Tags) {
 	client := &http.Client{}
 	url := "https://git.ucloudadmin.com/api/v4/projects/" + strconv.Itoa(id) + "/repository/tags"
-	bd := "id="+shaid+"&tag_name="+tagname+"&ref="+shaid+"&message=api接口在HTTP上调用后，给master合并后打上标签"
+	bd := "&tag_name="+tagname+"&ref=master&message=调用API后，给master打上标签"
     req, err := http.NewRequest("POST", url, strings.NewReader(bd))
     checkErr(err)
  
@@ -166,9 +170,11 @@ func HTTPPostTag(id int, shaid, tagname string) string{
 	body, err := ioutil.ReadAll(resp.Body)
 	checkErr(err)
 	var errmessage ErrMessage
+	var data1 Tags
+	json.Unmarshal(body, &data1)
 	json.Unmarshal(body, &errmessage)
 
-	return errmessage.Message
+	return errmessage.Message, data1
 
 }
 

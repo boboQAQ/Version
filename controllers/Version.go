@@ -108,8 +108,8 @@ func  broadcaster() {
 			beego.Info("更新标签名" + tagname)
 			tagname = VersionNumberUpdate(tagname,version.IssueStatus)
 			beego.Info("更新标签名后" + tagname)
-			shaid := models.GetCommitSha(projectID)
-			mesStr := models.HTTPPostTag(projectID, shaid, tagname)
+			
+			mesStr, _ := models.HTTPPostTag(projectID, tagname)
 			cnt := 0
 			for i := 0; i < len(version.ServiceList); i++ {
 				if version.ServiceList[i].ServiceNumber == "&&&" {
@@ -135,6 +135,7 @@ func  broadcaster() {
 			client.conn.WriteMessage(websocket.TextMessage, data)
 		case merges := <- merge:
 			client := <- ch3
+			//多个合并请求时，一一给与合并，其中一个出问题，便停止并将失败原因传送到前端
 			for _, MR := range merges {
 				beego.Info(MR.ProjectID)
 				beego.Info(MR.IID)
