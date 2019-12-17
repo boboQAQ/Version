@@ -72,7 +72,7 @@ $(function() {
         var send = $(this).parents("tr").find('td').eq(3).text() + document.getElementById("button2").value;
         send = send + " " + $("#slpk1").val();
         socket.send(send);
-        window.location.reload();
+        //window.location.reload();
 
     })
 
