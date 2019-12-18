@@ -5,9 +5,92 @@
     <script type="text/javascript" src="/static/js/jquery-ui"></script>
     <link href="/static/css/bootstrap-select.min.css" rel="stylesheet" media="screen">
     <link href="/static/css/bootstrap-combined.min.css" rel="stylesheet" media="screen">
+    <!-- <link href="/static/css/page.css" rel="stylesheet" type="text/css"> -->
     <script type="text/javascript" src="/static/js/bootstrap-select.min.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/js/historic.js" >  </script>
+    <script type="text/javascript" src="/static/js/historic.js">  </script>
+
+
+    <script type="text/javascript">
+
+        var pageOptions = { pageTotal: 10, curPage: 7, paginationId: '' };
+        dynamicPagingFunc(pageOptions);
+
+        function dynamicPagingFunc(pageOptions) {
+            var pageTotal = pageOptions.pageTotal || 1;
+            var curPage = pageOptions.curPage || 1;
+            var doc = document;
+            var paginationId = doc.getElementById('' + pageOptions.paginationId + '') || doc.getElementById('pagination');
+            var html = '';
+            if (curPage > pageTotal) {
+                curPage = 1;
+            }
+            /*总页数小于5，全部显示*/
+            if (pageTotal <= 5) {
+                html = appendItem(pageTotal, curPage, html);
+                paginationId.innerHTML = html;
+            }
+            /*总页数大于5时，要分析当前页*/
+            if (pageTotal > 5) {
+                if (curPage <= 4) {
+                    html = appendItem(pageTotal, curPage, html);
+                    paginationId.innerHTML = html;
+                } else if (curPage > 4) {
+                    html = appendItem(pageTotal, curPage, html);
+                    paginationId.innerHTML = html;
+                }
+            }
+        }
+
+        function appendItem(pageTotal, curPage, html) {
+            var starPage = 0;
+            var endPage = 0;
+
+            html += '<a id="prevBtn">&lt;</a>';
+
+            if (pageTotal <= 5) {
+                starPage = 1;
+                endPage = pageTotal;
+            } else if (pageTotal > 5 && curPage <= 4) {
+                starPage = 1;
+                endPage = 4;
+                if (curPage == 4) {
+                    endPage = 5;
+                }
+            } else {
+                if (pageTotal == curPage) {
+                    starPage = curPage - 3;
+                    endPage = curPage;
+                } else {
+                    starPage = curPage - 2;
+                    endPage = curPage + 1;
+                }
+                html += '<a id="first">1</a><span>...</span>';
+            }
+
+            for (let i = starPage; i <= endPage; i++) {
+                if (i == curPage) {
+                    html += '<a id="first">' + i + '</a>';
+                } else {
+                    html += '<a href="#">' + i + '</a>';
+                }
+            }
+
+            if (pageTotal <= 5) {
+                html += '<a href="#" id="nextBtn">&gt;</a>';
+            } else {
+                if (curPage < pageTotal - 2) {
+                    html += '<span>...</span>';
+                }
+                if (curPage <= pageTotal - 2) {
+                    html += '<a href="#">' + pageTotal + '</a>';
+                }
+                html += '<a href="#" id="nextBtn">&gt;</a>';
+            }
+            return html;
+        }
+
+    </script>
 </head>
 
 <body>
@@ -18,52 +101,31 @@
                     <div>&nbsp</div>
                     <div>
                         已发布版本号：
-                        <select class="selectpicker" name="versionnumber" id="slpk1" data-size="3"  data-live-search="true">
-                        
+                        <select class="selectpicker" name="versionnumber" id="slpk1" data-size="3"
+                            data-live-search="true">
+
                         </select>
                     </div>
-                    <!-- <div class="dropdown">
-                        版本号:&nbsp&nbsp&nbsp&nbsp
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                          请选择
-                          <span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a href="#">版本1</a></li>
-                            <li><a href="#">版本2</a></li>
-                            <li><a href="#">版本3</a></li>
-                        </ul>
-                    </div> -->
                     <div>&nbsp</div>
                     <div>
-                        服务列表：&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                        <select id="slpk2" class="selectpicker" multiple  data-live-search="true" data-size="3" >
-                            
+                        发布的服务列表：&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                        <select id="slpk2" class="selectpicker show-tick" multiple data-live-search="true" data-size="3">
+
                         </select>
                     </div>
-                    <!-- <div class="dropdown">
-                        服务列表:
-                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                      请选择
-                      <span class="caret"></span>
-                    </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                            <li><a href="#">服务1</a></li>
-                            <li><a href="#">服务2</a></li>
-                            <li><a href="#">服务3</a></li>
-                        </ul>
-                    </div> -->
                     <div>&nbsp</div>
+                    
+                  
                     <div class="container-fluid">
                         <div class="row-fluid">
-                            <div class="span12">
-                                <table class="table table-bordered" id="versiontable" >
+                            <div class="income_box" id="income_box">
+                                <table class="table table-bordered" id="versiontable">
                                     <thead>
                                         <tr>
-                                            <th data-type="num" >
+                                            <th data-type="num">
                                                 编号
                                             </th>
-                                            <th data-type="string" >
+                                            <th data-type="string">
                                                 版本号
                                             </th>
                                             <th data-type="string">
@@ -81,18 +143,25 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        
+
                                     </tbody>
                                 </table>
+                                
+                                
                             </div>
                         </div>
                     </div>
-                    <div class="input-group">
-                        <span>备注：</span>
-                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                        <input id="comment" type="text" class="form-control" placeholder="备注" aria-describedby="basic-addon1">
-                    </div>
                 </form>
+                <input type="hidden" id="nowpage" value="1">
+                <input type="hidden" id="totaltr" value="0">
+                <div class="dataTables_info" id="gadtable_info" role="status" aria-live="polite">当前第 0条　共计0条</div>
+                <div class="dataTables_paginate paging_simple_numbers" id="gadtable_paginate">
+                    <input class="paginate_button previous " type="button" value="前一页" aria-controls="gadtable"
+                        data-dt-idx="0" tabindex="0" id="gadtable_previous"></input>
+                    <input class="paginate_button next" type="button" value="后一页" aria-controls="gadtable"
+                        data-dt-idx="7" tabindex="0" id="gadtable_next"></input>
+                </div>
+
             </div>
 
         </div>

@@ -110,6 +110,7 @@ func  broadcaster() {
 			beego.Info("更新标签名后" + tagname)
 			
 			mesStr, _ := models.HTTPPostTag(projectID, tagname)
+			//利用cnt判断是否是最后一行数据发布
 			cnt := 0
 			for i := 0; i < len(version.ServiceList); i++ {
 				if version.ServiceList[i].ServiceNumber == "&&&" {
@@ -124,7 +125,15 @@ func  broadcaster() {
 			if cnt == len(version.ServiceList) - 1 {
 				version.IssueTime = time.Now()
 				version.Status = true
-				version.VersionNumber = VersionNumberUpdate(version.VersionNumber, version.IssueStatus)
+				services := GetGroups()
+				var mp = make(map[string]string)
+				for _, val := range services {
+					mp[val.ServiceName] = val.ServiceNumber
+				}
+				
+				for i := 0; i < len(version.ServiceList); i++ {
+					version.ServiceList[i].ServiceNumber = mp[version.ServiceList[i].ServiceName]
+				}
 				models.IssueVersion(&version)
 			} else {
 				models.UpdateVersion(&version)

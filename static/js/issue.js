@@ -33,29 +33,30 @@ $(function() {
 
          return times;
     }
-
-    //给发布列表动态展示函数
-    function showTable(data) {
-         //向表格动态添加数据
-      var versiontab = $('#versiontable');
-      list = data.servicelist;
-      for(var i = 0; i < list.length; i++) {
-        //服务版本如若是“&&&”则代表已经发布过，则不添加到表格中
-        if(list[i].servicenumber == "&&&")continue;
-        //表格添加的创建的版本号，服务名，服务id，版本创建时间
-        versiontab.append('<tr class="success"> ' +
-        '<td>' + i + '</td>' + 
-        '<td>' + data.versionnumber + '</td>' +
-        '<td>' +  list[i].servicename +  '</td>' +
-        '<td>' +  list[i].servicenumber +  '</td>' +
-        '<td>' + format(data.creattime) + '</td>' +
-        '<td>' + 
-        '<button id="button1" type="button" class="but" value="0">合并</button>' +
-        '<button id="button2" type="button" class="but" value="1">发布</button>' + 
-        '</td>' +
-        '</tr>')
-      }
+//给发布列表动态展示函数
+function showTable(data) {
+    //向表格动态添加数据
+    var versiontab = $('#versiontable');
+    if(data != null){
+        list = data.servicelist;
+        for(var i = 0; i < list.length; i++) {
+            //服务版本如若是“&&&”则代表已经发布过，则不添加到表格中
+            if(list[i].servicenumber == "&&&")continue;
+            //表格添加的创建的版本号，服务名，服务id，版本创建时间
+            versiontab.append('<tr class="success"> ' +
+            '<td>' + i + '</td>' + 
+            '<td>' + data.versionnumber + '</td>' +
+            '<td>' +  list[i].servicename +  '</td>' +
+            '<td>' +  list[i].servicenumber +  '</td>' +
+            '<td>' + format(data.creattime) + '</td>' +
+            '<td>' + 
+            '<button id="button1" type="button" class="but" value="0">合并</button>' +
+            '<button id="button2" type="button" class="but" value="1">发布</button>' + 
+            '</td>' +
+            '</tr>')
+        }
     }
+}
     $(document).on('click','#button1',function(){
        
         console.log("点击合并");
@@ -65,15 +66,16 @@ $(function() {
 
     })
     $(document).on('click','#button2',function(){
-       
         console.log("点击发布");
         console.log($("#slpk1").val());
         console.log( $(this).parents("tr").find('td').eq(2).text());
         var send = $(this).parents("tr").find('td').eq(3).text() + document.getElementById("button2").value;
         send = send + " " + $("#slpk1").val();
         socket.send(send);
-        //window.location.reload();
-
+        if($("#versiontable").find("tr").length > 2 ){
+           $('#button1').parent().parent().remove();
+        }
+        
     })
 
  
@@ -83,6 +85,10 @@ $(function() {
         {
             var data = JSON.parse(event.data);
             window.alert(data);
+            if($("#versiontable").find("tr").length == 2 ){
+                $('#button1').parent().parent().remove();
+                window.location.reload("true");
+            }
             return ;
         }
         //解析json，之后初始化加载的更新页面
@@ -102,7 +108,11 @@ $(function() {
             Data = data.versions;              //将版本信息赋值给全局变量
             console.log("revice:", data2);     //输出解析之后的后台文件
             var select = $("#slpk1");        //给下拉框定义别名
-            var list = data2[0].servicelist //默认选择了第一个，所以这是它的服务列表
+            if(data2.length > 0){
+                var list = data2[0].servicelist //默认选择了第一个，所以这是它的服务列表
+            } else {
+                var list = null
+            }
             showTable(data2[0]);
             var i = 1;
             for(var j = 0; j < data2.length; j++){   //使用jQuery动态给下拉框添加option
@@ -110,14 +120,16 @@ $(function() {
                 select.append("<option value='"+data2[j].id+"'>"+data2[j].versionnumber+"</option>"); 
             }
             select.selectpicker('refresh');   //刷新下拉框
-        
-            for(var j = 0; j < list.length; j++) {   //根据后台数据，在服务列表的下拉框中选出该大版本下挂钩的服务
-                var str
-                str =  list[j].servicenumber;
-                $("#slpk2 option[value='"+str+"']").prop("selected","selected");  
+            if(list != null) {
+                for(var j = 0; j < list.length; j++) {   //根据后台数据，在服务列表的下拉框中选出该大版本下挂钩的服务
+                    var str
+                    str =  list[j].servicenumber;
+                    $("#slpk2 option[value='"+str+"']").prop("selected","selected");  
+                }
             }
             select2.selectpicker('refresh');
-            document.getElementById("comment").value = data2[0].comment; //将选中的版本号的备注显示在页面
+            if(data2.length > 0)
+                document.getElementById("comment").value = data2[0].comment; //将选中的版本号的备注显示在页面
         
     }
 
