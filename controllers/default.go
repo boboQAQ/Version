@@ -338,16 +338,11 @@ func (c *HistoricController) WS() {
 	var version Version
 	version.conn = conn
 
-	//定义一个封装 后台服务列表和后台版本信息的对象
-	var sendmessage1 sendmessage
-
-	services := models.GetAllService()
+	//后台服务列表和后台版本信息的从数据库中取出
 	versions := models.GetAllStatus1()
 
-	sendmessage1.Services = services
-	sendmessage1.Versions = versions
 	
-	data, err := json.Marshal(sendmessage1)
+	data, err := json.Marshal(versions)
 	checkErr(err)
 	err = version.conn.WriteMessage(websocket.TextMessage, data)
 	checkErr(err)

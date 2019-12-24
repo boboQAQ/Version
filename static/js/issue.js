@@ -3,7 +3,7 @@ $(function() {
     var Data
     var num = 0;
     //创建websocket链接
-    var socket = new WebSocket("ws://127.0.0.1:8080/WS3");
+    var socket = new WebSocket("ws://127.0.0.1:8000/WS3");
 
     socket.onopen = function() {
         console.log("websocket open");
@@ -72,9 +72,9 @@ function showTable(data) {
         var send = $(this).parents("tr").find('td').eq(3).text() + document.getElementById("button2").value;
         send = send + " " + $("#slpk1").val();
         socket.send(send);
-        if($("#versiontable").find("tr").length > 2 ){
-           $('#button1').parent().parent().remove();
-        }
+        // if($("#versiontable").find("tr").length > 2 ){
+           
+        // }
         
     })
 
@@ -88,6 +88,8 @@ function showTable(data) {
             if($("#versiontable").find("tr").length == 2 ){
                 $('#button1').parent().parent().remove();
                 window.location.reload("true");
+            } else {
+                $('#button1').parent().parent().remove();
             }
             return ;
         }

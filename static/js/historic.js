@@ -2,7 +2,7 @@ $(function () {
 
     var Data
     //创建websocket链接
-    var socket = new WebSocket("ws://127.0.0.1:8080/WS4");
+    var socket = new WebSocket("ws://127.0.0.1:8000/WS4");
 
     socket.onopen = function () {
         console.log("websocket open");
@@ -53,8 +53,8 @@ $(function () {
     socket.onmessage = function (event) {
         //解析json，之后初始化加载的更新页面
         var data = JSON.parse(event.data);
-        var data1 = data.services;
-        var data2 = data.versions;
+        var data2 = data;
+        Data = data;
 
         var select2 = $("#slpk2");       //下面给服务列表动态添加服务 
         var dt = data2[0].servicelist;
@@ -106,9 +106,6 @@ $(function () {
             }
         });
 
-        
-
-        Data = data.versions;              //将版本信息赋值给全局变量
         console.log("revice:", data2);     //输出解析之后的后台文件
         var select = $("#slpk1");        //给下拉框定义别名
         var list = data2[0].servicelist //默认选择了第一个，所以这是它的服务列表

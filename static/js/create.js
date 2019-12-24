@@ -21,7 +21,7 @@ $("#inputMessage2").bind("input propertychange",function(event){
 });
 //====================webSocket连接======================
     // 创建一个webSocket连接
-    var socket = new WebSocket("ws://127.0.0.1:8080/WS1");
+    var socket = new WebSocket("ws://127.0.0.1:8000/WS1");
 
     // 当webSocket连接成功的回调函数
     socket.onopen = function () {
