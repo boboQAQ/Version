@@ -14,7 +14,7 @@ COPY . /go/src/Demo
  
  
 #端口
-EXPOSE 8000
+EXPOSE 8080
  
 #运行
 ENTRYPOINT ["./Demo"]

@@ -2,7 +2,7 @@ $(function () {
 
     var Data
     //创建websocket链接
-    var socket = new WebSocket("ws://127.0.0.1:8000/WS4");
+    var socket = new WebSocket("ws://127.0.0.1:8080/WS4");
 
     socket.onopen = function () {
         console.log("websocket open");
